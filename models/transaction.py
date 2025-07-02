@@ -1,102 +1,24 @@
+from datetime import datetime
+
 class Transaction:
-    """
-    A class to represent a financial transaction.
-    """
-    def __init__(self, transaction_id, amount, date, description):
-        """
-        Initialize the transaction with an ID, amount, date, and description.
-        :param transaction_id: Unique identifier for the transaction.
-        :param amount: The amount of the transaction.
-        :param date: The date of the transaction.
-        :param description: A brief description of the transaction.
-
-
-        :type transaction_id: str
-        :type amount: float
-        :type date: str
-        :type description: str
-
-        """
-        self.transaction_id = transaction_id
+    def __init__(self, amount, date, category, description, t_type):
         self.amount = amount
-        self.date = date
-        self.description = description
-
-    def __repr__(self):
-        return f"Transaction(id={
-            self.transaction_id}, amount={
-            self.amount}, date={
-            self.date}, description='{
-                self.description}')"
-
-    def __str__(self):
-        return f"Transaction ID: {
-            self.transaction_id}, Amount: {
-            self.amount}, Date: {
-            self.date}, Description: {
-                self.description}"
-
-
-class Expense(Transaction):
-    """
-    A class to represent an expense transaction, inheriting from Transaction.
-    """
-    def __init__(self, transaction_id, amount, date, description, category):
-        """
-        Initialize the expense with an ID, amount, date, description, and category.
-        """
-        super().__init__(transaction_id, amount, date, description)
+        self.date = datetime.strptime(date, "%Y-%m-%d") if isinstance(date, str) else date
         self.category = category
-
-    def __repr__(self):
-        """
-        Return a string representation of the expense.
-        """
-        return f"Expense(id={
-            self.transaction_id}, amount={
-            self.amount}, date={
-            self.date}, description='{
-                self.description}', category='{
-                    self.category}')"
+        self.description = description
+        self.type = t_type  # "income" oder "expense"
 
     def __str__(self):
-        """
-        Return a user-friendly string representation of the expense.
-        """
-        return f"Expense ID: {
-            self.transaction_id}, Amount: {
-            self.amount}, Date: {
-            self.date}, Description: {
-                self.description}, Category: {
-                    self.category}"
-
+        return f"{self.date.date()} | {self.type.upper()} | {self.amount:.2f} € | {self.category} | {self.description}"
 
 class Income(Transaction):
-    """
-    A class to represent an income transaction, inheriting from Transaction.
-    """
-    def __init__(self, transaction_id, amount, date, description, source):
-        super().__init__(transaction_id, amount, date, description)
+    def __init__(self, amount, date, category, description, source, tax_info):
+        super().__init__(amount, date, category, description, "income")
         self.source = source
+        self.tax_info = tax_info
 
-    def __repr__(self):
-        """
-        Return a string representation of the income.
-        """
-        return f"Income(id={
-            self.transaction_id}, amount={
-            self.amount}, date={
-            self.date}, description='{
-                self.description}', source='{
-                    self.source}')"
-
-    def __str__(self):
-        """
-        Return a user-friendly string representation of the income.
-        """
-        return f"Income ID: {
-            self.transaction_id}, Amount: {
-            self.amount}, Date: {
-            self.date}, Description: {
-                self.description}, Source: {
-                    self.source}"
+class Expense(Transaction):
+    def __init__(self, amount, date, category, description, payment_method, is_recurring):
+        super().__init__(amount, date, category, description, "expense")
+        self.payment_method = payment_method
+        self.is_recurring = is_recurring

@@ -1,20 +1,27 @@
 import streamlit as st
-from models.transaction import Income, Expense
-from models.account import Account
+from models import Account, Income, Expense, Category, BudgetPlan
 
-st.set_page_config(page_title="Finanztracker")
+# Session State initialisieren
+if "account" not in st.session_state:
+    st.session_state.account = Account("Bilals Konto")
 
 st.title("💸 Finanztracker")
-# Initialisiere das Konto mit einem Startguthaben
-account = Account("Mein Konto", 1000.00)
 
+# Eingabemaske
 st.subheader("Neue Transaktion hinzufügen")
 
-amount = st.number_input("Betrag", step=0.01)
+amount = st.number_input("Betrag (€)", step=0.01)
 date = st.date_input("Datum")
 category = st.text_input("Kategorie")
 description = st.text_input("Beschreibung")
 t_type = st.selectbox("Typ", ["income", "expense"])
+
+if t_type == "income":
+    source = st.text_input("Quelle")
+    tax_info = st.text_input("Steuerinfo")
+else:
+    payment_method = st.text_input("Zahlungsmethode")
+    is_recurring = st.checkbox("Wiederkehrend?")
 
 if st.button("Hinzufügen"):
     if t_type == "income":
@@ -23,23 +30,50 @@ if st.button("Hinzufügen"):
             date.strftime("%Y-%m-%d"),
             category,
             description,
-            source="Unbekannt",
-            tax_info="netto")
+            source,
+            tax_info
+        )
     else:
         tx = Expense(
             amount,
             date.strftime("%Y-%m-%d"),
             category,
             description,
-            payment_method="Karte",
-            is_recurring=False)
+            payment_method,
+            is_recurring
+        )
 
-    account.add_transaction(tx)
+    st.session_state.account.add_transaction(tx)
     st.success("Transaktion hinzugefügt!")
 
-st.subheader("Aktueller Kontostand")
-st.write(f"{account.get_balance():.2f} €")
+# Saldo anzeigen
+st.subheader("Kontostand")
+balance = st.session_state.account.get_balance()
+st.write(f"**Aktueller Saldo:** {balance:.2f} €")
 
-st.subheader("Transaktionen")
-for t in account.transactions:
-    st.write(str(t))
+# Transaktionen anzeigen
+st.subheader("Alle Transaktionen")
+for t in st.session_state.account.list_transactions():
+    st.write(t)
+
+# Kategorie-Übersicht
+st.subheader("Übersicht nach Kategorien")
+summary = st.session_state.account.summary_by_category()
+for cat, total in summary.items():
+    st.write(f"{cat}: {total:.2f} €")
+
+# Budgetprüfung (optional)
+categories = [
+    Category("Essen", 200),
+    Category("Miete", 800),
+    Category("Freizeit", 150)
+]
+budget_plan = BudgetPlan(categories, "2025-06-01", "2025-06-30")
+budget_check = budget_plan.check_budget(st.session_state.account.transactions)
+
+st.subheader("Budgetprüfung")
+for cat, over in budget_check.items():
+    if over:
+        st.error(f"Budget überschritten in Kategorie {cat}")
+    else:
+        st.success(f"Budget ok in Kategorie {cat}")

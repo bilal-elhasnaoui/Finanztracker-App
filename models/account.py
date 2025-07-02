@@ -1,30 +1,32 @@
 class Account:
-    """
-Represents a bank account with basic operations like deposit, withdraw, and balance inquiry.
-    """
-    def __init__(self, account_id: str, balance: float):
-        """Initialize the account with an ID and a starting balance."""
-        self.account_id = account_id
-        self.balance = balance
+    def __init__(self, name):
+        self.name = name
+        self.transactions = []
 
-    def deposit(self, amount: float) -> None:
-        """Deposit a specified amount into the account."""
-        if amount <= 0:
-            raise ValueError("Deposit amount must be positive")
-        self.balance += amount
+    def add_transaction(self, transaction):
+        self.transactions.append(transaction)
 
-    def withdraw(self, amount: float) -> None:
-        """Withdraw a specified amount from the account."""
-        if amount <= 0:
-            raise ValueError("Withdrawal amount must be positive")
-        if amount > self.balance:
-            raise ValueError("Insufficient funds")
-        self.balance -= amount
+    def get_balance(self):
+        total = 0
+        for t in self.transactions:
+            if t.type == "income":
+                total += t.amount
+            elif t.type == "expense":
+                total -= t.amount
+        return total
 
-    def get_balance(self) -> float:
-        """Return the current balance of the account."""
-        return self.balance
+    def list_transactions(self):
+        return [str(t) for t in self.transactions]
 
-    def __repr__(self):
-        """Return a string representation of the account."""
-        return f"Account(account_id={self.account_id}, balance={self.balance})"
+    def filter_by_type(self, t_type):
+        return [t for t in self.transactions if t.type == t_type]
+
+    def summary_by_category(self):
+        summary = {}
+        for t in self.transactions:
+            if t.category in summary:
+                summary[t.category] += t.amount if t.type == "income" else -t.amount
+            else:
+                summary[t.category] = t.amount if t.type == "income" else -t.amount
+        return summary
+

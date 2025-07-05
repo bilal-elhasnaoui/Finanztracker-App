@@ -12,13 +12,24 @@ class Account:
         self.transactions.append(transaction)
 
     def get_balance(self):
-        total = 0
-        for t in self.transactions:
-            if t.type == "income":
-                total += t.amount
-            elif t.type == "expense":
-                total -= t.amount
-        return total
+        """
+        Berechnet das verbleibende Budget:
+        Budget - Ausgaben + Einnahmen
+
+        Gibt None zurück, falls kein Budget gesetzt ist.
+        """
+        if self.monthly_budget is None:
+            return None
+
+        total_incomes = sum(
+            t.amount for t in self.transactions if t.type == "income"
+        )
+        total_expenses = sum(
+            t.amount for t in self.transactions if t.type == "expense"
+        )
+
+        saldo = self.monthly_budget - total_expenses + total_incomes
+        return saldo
 
     def list_transactions(self):
         return [str(t) for t in self.transactions]

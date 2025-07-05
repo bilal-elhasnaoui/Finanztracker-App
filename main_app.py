@@ -1,6 +1,8 @@
 import streamlit as st
 import plotly.graph_objects as go
 import hashlib
+import csv
+import io
 from models import (
     User,
     Account,
@@ -254,18 +256,31 @@ if "active_user" in st.session_state:
         # Kontostand & Transaktionen
         st.header("4️⃣ Kontostand & Transaktionen")
 
-        st.write(
-            f"**Saldo für Konto {selected_account_name}:** "
-            f"{selected_account.get_balance():.2f} €"
-        )
-        if selected_account.monthly_budget is not None:
-            st.write(
-                f"**Monatliches Budget:** {selected_account.monthly_budget:.2f} €"
+        balance = selected_account.get_balance()
+
+        if balance is not None:
+            total_incomes = sum(
+                t.amount for t in selected_account.transactions if t.type == "income"
             )
+            total_expenses = sum(
+                t.amount for t in selected_account.transactions if t.type == "expense"
+            )
+
+            st.write(f"**Monatliches Budget:** {selected_account.monthly_budget:.2f} €")
+            st.write(f"**Einnahmen bisher:** {total_incomes:.2f} €")
+            st.write(f"**Ausgaben bisher:** {total_expenses:.2f} €")
+
+            if selected_account.monthly_budget + total_incomes - total_expenses > 0:
+                st.success(
+                    f"✅ Dein verbleibendes Budget:" + f"{selected_account.monthly_budget + total_incomes - total_expenses:.2f} €"
+                )
+            elif selected_account.monthly_budget + total_incomes - total_expenses <= 0:
+                st.error(
+                    f"❌ Dein Budget ist überschritten! Saldo: {selected_account.monthly_budget + total_incomes - total_expenses:.2f} €"
+                )
+
         else:
             st.info("Noch kein monatliches Budget festgelegt.")
-
-
 
         if selected_account.transactions:
             st.subheader("Transaktionen:")
@@ -278,15 +293,59 @@ if "active_user" in st.session_state:
 
                 with col2:
                     if st.button(
-                        "🗑️ Löschen",
-                        key=f"delete_{selected_account.name}_{idx}"
+                            "🗑️ Löschen",
+                            key=f"delete_{selected_account.name}_{idx}"
                     ):
                         selected_account.transactions.pop(idx)
                         st.success("Transaktion gelöscht!")
 
+
+            # -------------------------------
+            # Export-Button
+            # -------------------------------
+
+            st.markdown("---")
+            st.subheader("⬇️ Transaktionen exportieren")
+
+            if st.button("CSV-Export starten"):
+                import csv
+                import io
+
+                output = io.StringIO()
+                writer = csv.writer(output, delimiter=';')
+
+                # Budget-Infos
+                writer.writerow(["Monatliches Budget", selected_account.monthly_budget or 0.0])
+                writer.writerow([])
+
+                # Kopfzeile
+                writer.writerow([
+                    "Datum", "Typ", "Kategorie", "Betrag", "Beschreibung", "Extra Infos"
+                ])
+
+                for t in selected_account.transactions:
+                    if t.type == "income":
+                        extra = f"Quelle: {t.source}, Steuerinfo: {t.tax_info}"
+                    else:
+                        extra = f"Zahlweise: {t.payment_method}, Wiederkehrend: {t.is_recurring}"
+
+                    writer.writerow([
+                        t.date,
+                        t.type,
+                        t.category,
+                        f"{t.amount:.2f}",
+                        t.description,
+                        extra
+                    ])
+
+                st.download_button(
+                    label="📥 CSV herunterladen",
+                    data=output.getvalue(),
+                    file_name=f"transaktionen_{selected_account.name}.csv",
+                    mime="text/csv",
+                )
         else:
             st.info("Keine Transaktionen vorhanden.")
-
         st.markdown("---")
 
         # Budgetprüfung

@@ -307,7 +307,7 @@ if "active_user" in st.session_state:
             st.subheader("⬇️ Transaktionen exportieren")
 
             if st.button("CSV-Export starten"):
-                
+
 
                 output = io.StringIO()
                 writer = csv.writer(output, delimiter=';')

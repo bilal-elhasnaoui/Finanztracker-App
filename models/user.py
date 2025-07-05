@@ -1,5 +1,6 @@
 import hashlib
 
+
 class User:
     def __init__(self, name, email, password_hash, accounts=None):
         """

@@ -42,4 +42,3 @@ class Account:
             else:
                 summary[t.category] = t.amount if t.type == "income" else -t.amount
         return summary
-

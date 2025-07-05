@@ -1,5 +1,6 @@
 import json
 
+
 class Storage:
     """
     Eine einfache Storage-Klasse zum Laden und Speichern von JSON-Dateien.

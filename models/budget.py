@@ -6,6 +6,7 @@ class Category:
     def is_over_budget(self, amount):
         return amount > self.budget_limit
 
+
 class BudgetPlan:
     def __init__(self, categories, start_date, end_date):
         self.categories = categories

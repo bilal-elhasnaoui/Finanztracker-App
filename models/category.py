@@ -2,6 +2,7 @@ class Category:
     """
     Represents a category with an ID, name, and description.
     """
+
     def __init__(self, category_id, name, description):
         """
         Initialize the category with an ID, name, and description.

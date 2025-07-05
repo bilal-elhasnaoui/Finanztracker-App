@@ -128,9 +128,7 @@ if "active_user" in st.session_state:
             [acc.name for acc in user.accounts]
         )
         selected_account = next(
-            (acc for acc in user.accounts if acc.name == selected_account_name),
-            None
-        )
+            (acc for acc in user.accounts if acc.name == selected_account_name), None)
 
         # Monatliches Budget festlegen
         if selected_account.monthly_budget is None:
@@ -147,8 +145,8 @@ if "active_user" in st.session_state:
             if submit_budget:
                 selected_account.monthly_budget = budget_value
                 st.success(
-                    f"Monatliches Budget von {budget_value:.2f} € gespeichert für Konto {selected_account_name}!"
-                )
+                    f"Monatliches Budget von {
+                        budget_value:.2f} € gespeichert für Konto {selected_account_name}!")
 
         else:
             st.info(
@@ -163,7 +161,8 @@ if "active_user" in st.session_state:
 
         with st.form("category_form"):
             cat_name = st.text_input("Kategorie-Name")
-            cat_limit = st.number_input("Budget-Limit (€)", step=10.0, min_value=0.0)
+            cat_limit = st.number_input(
+                "Budget-Limit (€)", step=10.0, min_value=0.0)
             submit_cat = st.form_submit_button("Kategorie speichern")
 
         if submit_cat and selected_account:
@@ -173,9 +172,7 @@ if "active_user" in st.session_state:
                 new_category = Category(cat_name, cat_limit)
                 selected_account.add_category(new_category)
                 st.success(
-                    f"Kategorie {cat_name} gespeichert für Konto {selected_account_name}!"
-                )
-
+                    f"Kategorie {cat_name} gespeichert für Konto {selected_account_name}!")
 
         # Kategorien anzeigen + löschen
         if selected_account.categories:
@@ -185,7 +182,8 @@ if "active_user" in st.session_state:
                 col1, col2 = st.columns([5, 1])
 
                 with col1:
-                    st.write(f"**{cat.name}** → Limit: {cat.budget_limit:.2f} €")
+                    st.write(
+                        f"**{cat.name}** → Limit: {cat.budget_limit:.2f} €")
 
                 with col2:
                     if st.button(
@@ -207,7 +205,8 @@ if "active_user" in st.session_state:
             t_type = st.selectbox("Typ der Transaktion", ["income", "expense"])
 
             with st.form("transaction_form"):
-                amount = st.number_input("Betrag (€)", step=0.01, min_value=0.01)
+                amount = st.number_input(
+                    "Betrag (€)", step=0.01, min_value=0.01)
                 date = st.date_input("Datum")
                 category = st.selectbox(
                     "Kategorie auswählen",
@@ -245,8 +244,7 @@ if "active_user" in st.session_state:
                     )
                 selected_account.add_transaction(tx)
                 st.success(
-                    f"Transaktion gespeichert für Konto {selected_account_name}!"
-                )
+                    f"Transaktion gespeichert für Konto {selected_account_name}!")
 
         else:
             st.warning("Bitte zuerst Kategorien für das Konto anlegen!")
@@ -260,24 +258,26 @@ if "active_user" in st.session_state:
 
         if balance is not None:
             total_incomes = sum(
-                t.amount for t in selected_account.transactions if t.type == "income"
-            )
+                t.amount for t in selected_account.transactions if t.type == "income")
             total_expenses = sum(
-                t.amount for t in selected_account.transactions if t.type == "expense"
-            )
+                t.amount for t in selected_account.transactions if t.type == "expense")
 
-            st.write(f"**Monatliches Budget:** {selected_account.monthly_budget:.2f} €")
+            st.write(
+                f"**Monatliches Budget:** {selected_account.monthly_budget:.2f} €")
             st.write(f"**Einnahmen bisher:** {total_incomes:.2f} €")
             st.write(f"**Ausgaben bisher:** {total_expenses:.2f} €")
 
             if selected_account.monthly_budget + total_incomes - total_expenses > 0:
-                st.success(
-                    f"✅ Dein verbleibendes Budget:" + f"{selected_account.monthly_budget + total_incomes - total_expenses:.2f} €"
-                )
+                st.success(f"✅ Dein verbleibendes Budget:" +
+                           f"{selected_account.monthly_budget +
+                               total_incomes -
+                               total_expenses:.2f} €")
             elif selected_account.monthly_budget + total_incomes - total_expenses <= 0:
                 st.error(
-                    f"❌ Dein Budget ist überschritten! Saldo: {selected_account.monthly_budget + total_incomes - total_expenses:.2f} €"
-                )
+                    f"❌ Dein Budget ist überschritten! Saldo: {
+                        selected_account.monthly_budget +
+                        total_incomes -
+                        total_expenses:.2f} €")
 
         else:
             st.info("Noch kein monatliches Budget festgelegt.")
@@ -299,7 +299,6 @@ if "active_user" in st.session_state:
                         selected_account.transactions.pop(idx)
                         st.success("Transaktion gelöscht!")
 
-
             # -------------------------------
             # Export-Button
             # -------------------------------
@@ -315,19 +314,21 @@ if "active_user" in st.session_state:
                 writer = csv.writer(output, delimiter=';')
 
                 # Budget-Infos
-                writer.writerow(["Monatliches Budget", selected_account.monthly_budget or 0.0])
+                writer.writerow(["Monatliches Budget",
+                                 selected_account.monthly_budget or 0.0])
                 writer.writerow([])
 
                 # Kopfzeile
-                writer.writerow([
-                    "Datum", "Typ", "Kategorie", "Betrag", "Beschreibung", "Extra Infos"
-                ])
+                writer.writerow(["Datum", "Typ", "Kategorie",
+                                "Betrag", "Beschreibung", "Extra Infos"])
 
                 for t in selected_account.transactions:
                     if t.type == "income":
                         extra = f"Quelle: {t.source}, Steuerinfo: {t.tax_info}"
                     else:
-                        extra = f"Zahlweise: {t.payment_method}, Wiederkehrend: {t.is_recurring}"
+                        extra = f"Zahlweise: {
+                            t.payment_method}, Wiederkehrend: {
+                            t.is_recurring}"
 
                     writer.writerow([
                         t.date,
@@ -365,7 +366,8 @@ if "active_user" in st.session_state:
                 else:
                     st.success(f"✅ Budget ok in Kategorie: {cat}")
         else:
-            st.info("Keine Transaktionen oder Kategorien vorhanden für Budgetprüfung.")
+            st.info(
+                "Keine Transaktionen oder Kategorien vorhanden für Budgetprüfung.")
 
         st.markdown("---")
 
@@ -413,8 +415,7 @@ if "active_user" in st.session_state:
                     ]
                 )
                 fig_pie.update_layout(
-                    title=f"Anteile der Ausgaben pro Kategorie ({selected_account_name})"
-                )
+                    title=f"Anteile der Ausgaben pro Kategorie ({selected_account_name})")
                 st.plotly_chart(fig_pie, use_container_width=True)
             else:
                 st.info("Keine Ausgaben vorhanden für das Kreisdiagramm.")
@@ -469,4 +470,3 @@ if "active_user" in st.session_state:
 
 else:
     st.info("Bitte zuerst einloggen oder registrieren.")
-

@@ -1,7 +1,12 @@
 class Account:
-    def __init__(self, name):
+    def __init__(self, name, categories=None, monthly_budget=None):
         self.name = name
+        self.categories = categories if categories is not None else []
         self.transactions = []
+        self.monthly_budget = monthly_budget
+
+    def add_category(self, category):
+        self.categories.append(category)
 
     def add_transaction(self, transaction):
         self.transactions.append(transaction)
@@ -17,9 +22,6 @@ class Account:
 
     def list_transactions(self):
         return [str(t) for t in self.transactions]
-
-    def filter_by_type(self, t_type):
-        return [t for t in self.transactions if t.type == t_type]
 
     def summary_by_category(self):
         summary = {}

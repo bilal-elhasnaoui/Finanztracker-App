@@ -1,44 +1,49 @@
+import hashlib
+
 class User:
-    def __init__(self, user_id: str, username: str, email: str):
-        self.user_id = user_id
-        self.username = username
+    def __init__(self, name, email, password_hash, accounts=None):
+        """
+        User-Objekt für die Finanz-App.
+
+        :param name: Name des Users
+        :param email: E-Mail-Adresse
+        :param password_hash: Passwort-Hash (SHA-256)
+        :param accounts: Liste der Accounts des Users
+
+        :type accounts: list of Account objects
+        :type name: str
+        :type email: str
+        :type password_hash: str
+
+        Initialisiert ein User-Objekt mit Name, E-Mail, Passwort-Hash und optionalen Accounts.
+
+        """
+        self.name = name
         self.email = email
+        self.password_hash = password_hash
+        self.accounts = accounts if accounts is not None else []
 
-    def __repr__(self):
-        return f"User(user_id={
-            self.user_id}, username={
-            self.username}, email={
-            self.email})"
+    def add_account(self, account):
+        """
+        Fügt dem User ein neues Konto hinzu.
 
-    def __str__(self):
-        return f"User ID: {
-            self.user_id}, Username: {
-            self.username}, Email: {
-            self.email}"
+        :param account: Account-Objekt, das hinzugefügt werden soll
 
-    def to_dict(self):
-        return {
-            "user_id": self.user_id,
-            "username": self.username,
-            "email": self.email
-        }
+        """
+        self.accounts.append(account)
 
-    @classmethod
-    def from_dict(cls, data):
-        return cls(
-            user_id=data.get("user_id"),
-            username=data.get("username"),
-            email=data.get("email")
-        )
+    def total_balance(self):
+        """
+        Gibt die Gesamtsumme aller Konten des Users zurück.
+        """
+        return sum(acc.get_balance() for acc in self.accounts)
 
-    def update_email(self, new_email: str):
-        if "@" in new_email and "." in new_email:
-            self.email = new_email
-        else:
-            raise ValueError("Invalid email format")
+    def check_password(self, password):
+        """
+        Prüft, ob das eingegebene Passwort korrekt ist.
 
-    def update_username(self, new_username: str):
-        if new_username and len(new_username) > 0:
-            self.username = new_username
-        else:
-            raise ValueError("Username cannot be empty")
+        :param password: Eingegebenes Passwort (Plaintext)
+        :return: True, wenn Passwort korrekt, sonst False
+        """
+        hashed = hashlib.sha256(password.encode()).hexdigest()
+        return hashed == self.password_hash

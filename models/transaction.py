@@ -1,6 +1,7 @@
 from datetime import datetime
 
 class Transaction:
+
     def __init__(self, amount, date, category, description, t_type):
         self.amount = amount
         self.date = datetime.strptime(date, "%Y-%m-%d") if isinstance(date, str) else date

@@ -2,9 +2,12 @@ import hashlib
 
 
 class User:
+    """
+    User-Objekt für die Finanz-App.
+    """
     def __init__(self, name, email, password_hash, accounts=None):
         """
-        User-Objekt für die Finanz-App.
+        Initialisiert ein User-Objekt mit Name, E-Mail, Passwort-Hash und optionalen Accounts.
 
         :param name: Name des Users
         :param email: E-Mail-Adresse
@@ -16,7 +19,6 @@ class User:
         :type email: str
         :type password_hash: str
 
-        Initialisiert ein User-Objekt mit Name, E-Mail, Passwort-Hash und optionalen Accounts.
 
         """
         self.name = name
@@ -29,13 +31,18 @@ class User:
         Fügt dem User ein neues Konto hinzu.
 
         :param account: Account-Objekt, das hinzugefügt werden soll
+        :type account: Account object
+        :return: None
 
         """
         self.accounts.append(account)
 
     def total_balance(self):
         """
-        Gibt die Gesamtsumme aller Konten des Users zurück.
+        Berechnet die Summe der Salden aller Accounts des Users.
+
+        :return: Gesamtsumme der Salden aller Accounts
+        :rtype: float
         """
         return sum(acc.get_balance() for acc in self.accounts)
 
@@ -45,6 +52,8 @@ class User:
 
         :param password: Eingegebenes Passwort (Plaintext)
         :return: True, wenn Passwort korrekt, sonst False
+        :rtype: bool
+
         """
         hashed = hashlib.sha256(password.encode()).hexdigest()
         return hashed == self.password_hash

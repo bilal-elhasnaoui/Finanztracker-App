@@ -92,14 +92,70 @@ if submit_user:
         if existing_user.check_password(password):
             st.session_state.active_user = existing_user
             st.success(f"Willkommen zurück, {existing_user.name}!")
+
+            # → hier kannst du auch speichern, falls nötig
+            # data = ...
+            # user_storage.save(data)
+
         else:
             st.error("❌ Falsches Passwort!")
     else:
+        # Neuen User anlegen
         pw_hash = hashlib.sha256(password.encode()).hexdigest()
         new_user = User(name, email, pw_hash)
         st.session_state.users.append(new_user)
         st.session_state.active_user = new_user
         st.success(f"Benutzer {name} registriert!")
+
+        # ---------------------------
+        # SAVE BLOCK VOR DEM RERUN!
+        # ---------------------------
+
+        # Alle User-Daten sammeln
+        data = []
+        for u in st.session_state.users:
+            u_data = {
+                "name": u.name,
+                "email": u.email,
+                "password_hash": u.password_hash,
+                "accounts": []
+            }
+            for acc in u.accounts:
+                acc_data = {
+                    "name": acc.name,
+                    "monthly_budget": acc.monthly_budget,
+                    "categories": [
+                        {"name": c.name, "limit": c.budget_limit}
+                        for c in acc.categories
+                    ],
+                    "transactions": []
+                }
+                for t in acc.transactions:
+                    tx_data = {
+                        "amount": t.amount,
+                        "date": t.date.strftime("%Y-%m-%d"),
+                        "category": t.category,
+                        "description": t.description,
+                        "type": t.type
+                    }
+                    if t.type == "income":
+                        tx_data.update({
+                            "source": t.source,
+                            "tax_info": t.tax_info
+                        })
+                    else:
+                        tx_data.update({
+                            "payment_method": t.payment_method,
+                            "is_recurring": t.is_recurring
+                        })
+                    acc_data["transactions"].append(tx_data)
+                u_data["accounts"].append(acc_data)
+            data.append(u_data)
+
+        user_storage.save(data)
+
+
+
 
 # -------------------------------
 # Haupt-App

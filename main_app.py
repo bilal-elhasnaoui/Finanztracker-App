@@ -20,6 +20,53 @@ from models import (
 user_storage = Storage("users.json")
 
 # -------------------------------
+# Hilfsfunktion zum Speichern
+# -------------------------------
+
+def save_users():
+    data = []
+    for u in st.session_state.users:
+        u_data = {
+            "name": u.name,
+            "email": u.email,
+            "password_hash": u.password_hash,
+            "accounts": []
+        }
+        for acc in u.accounts:
+            acc_data = {
+                "name": acc.name,
+                "monthly_budget": acc.monthly_budget,
+                "categories": [
+                    {"name": c.name, "limit": c.budget_limit}
+                    for c in acc.categories
+                ],
+                "transactions": []
+            }
+            for t in acc.transactions:
+                tx_data = {
+                    "amount": t.amount,
+                    "date": t.date.strftime("%Y-%m-%d"),
+                    "category": t.category,
+                    "description": t.description,
+                    "type": t.type
+                }
+                if t.type == "income":
+                    tx_data.update({
+                        "source": t.source,
+                        "tax_info": t.tax_info
+                    })
+                else:
+                    tx_data.update({
+                        "payment_method": t.payment_method,
+                        "is_recurring": t.is_recurring
+                    })
+                acc_data["transactions"].append(tx_data)
+            u_data["accounts"].append(acc_data)
+        data.append(u_data)
+
+    user_storage.save(data)
+
+# -------------------------------
 # Users laden
 # -------------------------------
 
@@ -92,69 +139,15 @@ if submit_user:
         if existing_user.check_password(password):
             st.session_state.active_user = existing_user
             st.success(f"Willkommen zurück, {existing_user.name}!")
-
-            # → hier kannst du auch speichern, falls nötig
-            # data = ...
-            # user_storage.save(data)
-
         else:
             st.error("❌ Falsches Passwort!")
     else:
-        # Neuen User anlegen
         pw_hash = hashlib.sha256(password.encode()).hexdigest()
         new_user = User(name, email, pw_hash)
         st.session_state.users.append(new_user)
         st.session_state.active_user = new_user
+        save_users()
         st.success(f"Benutzer {name} registriert!")
-
-        # ---------------------------
-        # SAVE BLOCK VOR DEM RERUN!
-        # ---------------------------
-
-        # Alle User-Daten sammeln
-        data = []
-        for u in st.session_state.users:
-            u_data = {
-                "name": u.name,
-                "email": u.email,
-                "password_hash": u.password_hash,
-                "accounts": []
-            }
-            for acc in u.accounts:
-                acc_data = {
-                    "name": acc.name,
-                    "monthly_budget": acc.monthly_budget,
-                    "categories": [
-                        {"name": c.name, "limit": c.budget_limit}
-                        for c in acc.categories
-                    ],
-                    "transactions": []
-                }
-                for t in acc.transactions:
-                    tx_data = {
-                        "amount": t.amount,
-                        "date": t.date.strftime("%Y-%m-%d"),
-                        "category": t.category,
-                        "description": t.description,
-                        "type": t.type
-                    }
-                    if t.type == "income":
-                        tx_data.update({
-                            "source": t.source,
-                            "tax_info": t.tax_info
-                        })
-                    else:
-                        tx_data.update({
-                            "payment_method": t.payment_method,
-                            "is_recurring": t.is_recurring
-                        })
-                    acc_data["transactions"].append(tx_data)
-                u_data["accounts"].append(acc_data)
-            data.append(u_data)
-
-        user_storage.save(data)
-
-
 
 
 # -------------------------------
@@ -166,10 +159,7 @@ if "active_user" in st.session_state:
 
     st.subheader(f"Angemeldet als: {user.name} ({user.email})")
 
-    # -----------------------------------
     # Konto anlegen
-    # -----------------------------------
-
     st.header("1️⃣ Konto anlegen")
 
     with st.form("account_form"):
@@ -179,17 +169,13 @@ if "active_user" in st.session_state:
     if submit_acc:
         acc = Account(acc_name)
         user.add_account(acc)
+        save_users()
         st.success(f"Konto {acc_name} angelegt!")
 
-
-    # -----------------------------------
-    # Konten verwalten
-    # -----------------------------------
 
     if user.accounts:
         st.subheader("⚙️ Konten verwalten")
 
-        # Konten anzeigen + löschen
         for idx, acc in enumerate(user.accounts):
             col1, col2 = st.columns([5, 1])
 
@@ -198,14 +184,14 @@ if "active_user" in st.session_state:
 
             with col2:
                 if st.button(
-                        "🗑️ Konto löschen",
-                        key=f"delete_account_{idx}"
+                    "🗑️ Konto löschen",
+                    key=f"delete_account_{idx}"
                 ):
                     user.accounts.pop(idx)
+                    save_users()
                     st.success(f"Konto **{acc.name}** wurde gelöscht!")
 
 
-        # Konto auswählen (falls noch eines übrig ist)
         if user.accounts:
             selected_account_name = st.selectbox(
                 "Konto auswählen",
@@ -217,11 +203,6 @@ if "active_user" in st.session_state:
             )
 
             if selected_account is not None:
-
-                # -----------------------------------
-                # Monatliches Budget festlegen
-                # -----------------------------------
-
                 if selected_account.monthly_budget is None:
                     st.header("🔢 Monatliches Budget festlegen")
 
@@ -235,6 +216,7 @@ if "active_user" in st.session_state:
 
                     if submit_budget:
                         selected_account.monthly_budget = budget_value
+                        save_users()
                         st.success(
                             f"Monatliches Budget von {budget_value:.2f} € gespeichert für Konto {selected_account_name}!"
                         )
@@ -246,10 +228,6 @@ if "active_user" in st.session_state:
                     )
 
                 st.markdown("---")
-
-                # -----------------------------------
-                # Kategorien anlegen
-                # -----------------------------------
 
                 st.header("2️⃣ Kategorien für Konto anlegen")
 
@@ -264,12 +242,12 @@ if "active_user" in st.session_state:
                     else:
                         new_category = Category(cat_name, cat_limit)
                         selected_account.add_category(new_category)
+                        save_users()
                         st.success(
                             f"Kategorie {cat_name} gespeichert für Konto {selected_account_name}!"
                         )
 
 
-                # Kategorien anzeigen + löschen
                 if selected_account.categories:
                     st.subheader(f"Kategorien in Konto {selected_account_name}:")
 
@@ -281,20 +259,17 @@ if "active_user" in st.session_state:
 
                         with col2:
                             if st.button(
-                                    "🗑️ Löschen",
-                                    key=f"delete_category_{selected_account_name}_{idx}"
+                                "🗑️ Löschen",
+                                key=f"delete_category_{selected_account_name}_{idx}"
                             ):
                                 selected_account.categories.pop(idx)
+                                save_users()
                                 st.success(f"Kategorie {cat.name} gelöscht!")
 
                 else:
                     st.info("Noch keine Kategorien in diesem Konto.")
 
                 st.markdown("---")
-
-                # -----------------------------------
-                # Transaktionen erfassen
-                # -----------------------------------
 
                 st.header("3️⃣ Neue Transaktion hinzufügen")
 
@@ -339,6 +314,7 @@ if "active_user" in st.session_state:
                                 is_recurring
                             )
                         selected_account.add_transaction(tx)
+                        save_users()
                         st.success(
                             f"Transaktion gespeichert für Konto {selected_account_name}!"
                         )
@@ -347,10 +323,6 @@ if "active_user" in st.session_state:
                     st.warning("Bitte zuerst Kategorien für das Konto anlegen!")
 
                 st.markdown("---")
-
-                # -----------------------------------
-                # Saldo-Berechnung & Anzeige
-                # -----------------------------------
 
                 st.header("4️⃣ Kontostand & Transaktionen")
 
@@ -379,28 +351,24 @@ if "active_user" in st.session_state:
 
                         with col2:
                             if st.button(
-                                    "🗑️ Löschen",
-                                    key=f"delete_{selected_account.name}_{idx}"
+                                "🗑️ Löschen",
+                                key=f"delete_{selected_account.name}_{idx}"
                             ):
                                 selected_account.transactions.pop(idx)
+                                save_users()
                                 st.success("Transaktion gelöscht!")
 
 
-                    # Export-Button
                     st.markdown("---")
                     st.subheader("⬇️ Transaktionen exportieren")
 
                     if st.button("CSV-Export starten"):
-
-
                         output = io.StringIO()
                         writer = csv.writer(output, delimiter=';')
 
-                        # Budget Info
                         writer.writerow(["Monatliches Budget", selected_account.monthly_budget or 0.0])
                         writer.writerow([])
 
-                        # Kopfzeile
                         writer.writerow([
                             "Datum", "Typ", "Kategorie", "Betrag", "Beschreibung", "Extra Infos"
                         ])
@@ -431,10 +399,6 @@ if "active_user" in st.session_state:
 
                 st.markdown("---")
 
-                # -----------------------------------
-                # Budgetprüfung
-                # -----------------------------------
-
                 st.header("5️⃣ Budgetprüfung")
 
                 if selected_account.transactions and selected_account.categories:
@@ -455,10 +419,6 @@ if "active_user" in st.session_state:
 
                 st.markdown("---")
 
-                # -----------------------------------
-                # Diagramme
-                # -----------------------------------
-
                 st.header("6️⃣ Diagramme")
 
                 summary = selected_account.summary_by_category()
@@ -467,7 +427,6 @@ if "active_user" in st.session_state:
                     categories = list(summary.keys())
                     values = list(summary.values())
 
-                    # Balkendiagramm
                     fig_bar = go.Figure(
                         data=[
                             go.Bar(
@@ -483,7 +442,6 @@ if "active_user" in st.session_state:
                     )
                     st.plotly_chart(fig_bar, use_container_width=True)
 
-                    # Pie Chart nur für Ausgaben
                     expense_categories = []
                     expense_values = []
 
@@ -509,7 +467,6 @@ if "active_user" in st.session_state:
                         st.info("Keine Ausgaben vorhanden für das Kreisdiagramm.")
                 else:
                     st.info("Keine Daten für Diagramme vorhanden.")
-
             else:
                 st.info("Kein Konto ausgewählt.")
         else:
@@ -518,3 +475,5 @@ if "active_user" in st.session_state:
     else:
         selected_account = None
         st.info("Bitte erst ein Konto anlegen.")
+else:
+    st.info("Bitte zuerst einloggen oder registrieren.")

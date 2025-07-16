@@ -1,7 +1,6 @@
 """
-This module initializes the models for the personal finance application.
-It includes classes for transactions, accounts, budgets, and user management.
-
+Dieses Modul initialisiert die Modelle für die persönliche Finanzanwendung.
+Es umfasst Klassen für Transaktionen, Konten, Budgets und die Benutzerverwaltung.
 """
 from .transaction import Transaction, Income, Expense
 from .account import Account

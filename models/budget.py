@@ -1,23 +1,22 @@
 class Category:
     """
-    Represents a budget category with a name and a budget limit.
-    This class is used to define budget categories and check if expenses exceed the budget limit.
+    Repräsentiert eine Budgetkategorie mit einem Namen und einem Budgetlimit.
+    Diese Klasse dient dazu, Budgetkategorien zu definieren und zu prüfen, ob Ausgaben das Budgetlimit überschreiten.
 
-    Attributes:
-        name (str): The name of the budget category.
-        budget_limit (float): The maximum budget limit for this category.
+    Attribute:
+        name (str): Der Name der Budgetkategorie.
+        budget_limit (float): Das maximale Budgetlimit für diese Kategorie.
     """
     def __init__(self, name, budget_limit):
         """
-        Initialize the Category with a name and a budget limit.
-        This constructor sets the name and budget limit for the category.
+        Initialisiert die Kategorie mit einem Namen und einem Budgetlimit.
+        Dieser Konstruktor setzt den Namen und das Budgetlimit der Kategorie.
 
-        :param name: The name of the budget category.
-        :param budget_limit: The maximum budget limit for this category.
+        :param name: Der Name der Budgetkategorie.
+        :param budget_limit: Das maximale Budgetlimit für diese Kategorie.
 
         :type name: str
         :type budget_limit: float
-
 
         """
         self.name = name
@@ -25,17 +24,15 @@ class Category:
 
     def is_over_budget(self, amount):
         """
-        Check if the given amount exceeds the budget limit for this category.
+        Prüft, ob der angegebene Betrag das Budgetlimit dieser Kategorie überschreitet.
 
-        This method compares the provided amount with the budget limit and returns True if the amount exceeds the limit, otherwise False.
-        :param amount: The amount to check against the budget limit.
+        Diese Methode vergleicht den bereitgestellten Betrag mit dem Budgetlimit und gibt ``True`` zurück, wenn der Betrag das Limit übersteigt, andernfalls ``False``.
+        :param amount: Der zu überprüfende Betrag.
 
         :type amount: float
 
-        :return: True if the amount exceeds the budget limit, otherwise False.
+        :return: ``True`` bei Überschreitung des Budgetlimits, sonst ``False``.
         :rtype: bool
-
-
 
         """
         return amount > self.budget_limit
@@ -43,19 +40,18 @@ class Category:
 
 class BudgetPlan:
     """
-    Represents a budget plan that tracks expenses against defined categories within a specified date range.
+    Repräsentiert einen Budgetplan, der Ausgaben anhand definierter Kategorien in einem bestimmten Zeitraum nachverfolgt.
     """
     def __init__(self, categories, start_date, end_date):
         """
-        Initialize the BudgetPlan with categories and a date range.
-        :param categories: List of Category objects defining the budget categories.
-        :param start_date: Start date of the budget plan (datetime object).
-        :param end_date: End date of the budget plan (datetime object).
+        Initialisiert den Budgetplan mit Kategorien und einem Datumsbereich.
+        :param categories: Liste von ``Category``-Objekten, die die Budgetkategorien definieren.
+        :param start_date: Startdatum des Budgetplans (``datetime``-Objekt).
+        :param end_date: Enddatum des Budgetplans (``datetime``-Objekt).
 
-        :type categories: list of Category objects
+        :type categories: list[Category]
         :type start_date: datetime
         :type end_date: datetime
-
 
         """
         self.categories = categories
@@ -64,14 +60,13 @@ class BudgetPlan:
 
     def check_budget(self, transactions):
         """
-        Check if the expenses in the given transactions exceed the budget for each category.
-        This method iterates through the transactions and calculates the total expenses for each category.
-        It returns a dictionary where the keys are category names and the values are booleans indicating whether the budget is exceeded.
+        Prüft, ob die Ausgaben in den gegebenen Transaktionen das Budget jeder Kategorie überschreiten.
+        Diese Methode durchläuft die Transaktionen und berechnet die Gesamtausgaben pro Kategorie.
+        Sie gibt ein Dictionary zurück, dessen Schlüssel die Kategorienamen und dessen Werte Booleans sind, die angeben, ob das Budget überschritten wurde.
 
-
-        :param transactions: List of Transaction objects to check against the budget.
-        :type transactions: list of Transaction objects
-        :return: Dictionary with category names as keys and booleans as values indicating if the budget is exceeded.
+        :param transactions: Liste von ``Transaction``-Objekten, die überprüft werden sollen.
+        :type transactions: list[Transaction]
+        :return: Dictionary mit Kategorienamen als Schlüsseln und ``True``/``False`` als Wert, je nachdem, ob das Budget überschritten wurde.
         :rtype: dict
 
         """

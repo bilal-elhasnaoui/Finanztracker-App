@@ -58,6 +58,7 @@ class Income(Transaction):
     """
     Repräsentiert eine Einnahmetransaktion und erbt von ``Transaction``.
     """
+
     def __init__(self, amount, date, category, description, source, tax_info):
         """
         Initialisiert eine ``Income``-Instanz.

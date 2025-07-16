@@ -1,5 +1,6 @@
 class Account:
     """Account-Objekt für die Finanz-App."""
+
     def __init__(self, name, categories=None, monthly_budget=None):
         """
         Initialisiert ein Account-Objekt mit Name, Kategorien und optionalem monatlichen Budget.

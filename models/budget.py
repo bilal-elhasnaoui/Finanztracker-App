@@ -7,6 +7,7 @@ class Category:
         name (str): Der Name der Budgetkategorie.
         budget_limit (float): Das maximale Budgetlimit für diese Kategorie.
     """
+
     def __init__(self, name, budget_limit):
         """
         Initialisiert die Kategorie mit einem Namen und einem Budgetlimit.
@@ -42,6 +43,7 @@ class BudgetPlan:
     """
     Repräsentiert einen Budgetplan, der Ausgaben anhand definierter Kategorien in einem bestimmten Zeitraum nachverfolgt.
     """
+
     def __init__(self, categories, start_date, end_date):
         """
         Initialisiert den Budgetplan mit Kategorien und einem Datumsbereich.

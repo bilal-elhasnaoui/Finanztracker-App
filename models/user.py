@@ -5,6 +5,7 @@ class User:
     """
     User-Objekt für die Finanz-App.
     """
+
     def __init__(self, name, email, password_hash, accounts=None):
         """
         Initialisiert ein User-Objekt mit Name, E-Mail, Passwort-Hash und optionalen Accounts.

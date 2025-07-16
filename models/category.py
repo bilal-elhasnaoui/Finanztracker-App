@@ -1,15 +1,15 @@
 class Category:
     """
-    Represents a category with an ID, name, and description.
+    Repräsentiert eine Kategorie mit ID, Namen und Beschreibung.
     """
 
     def __init__(self, category_id, name, description):
         """
-        Initialize the category with an ID, name, and description.
+        Initialisiert die Kategorie mit ID, Name und Beschreibung.
 
-        :param category_id: Unique identifier for the category.
-        :param name: Name of the category.
-        :param description: Description of the category.
+        :param category_id: Eindeutige Kennung der Kategorie.
+        :param name: Name der Kategorie.
+        :param description: Beschreibung der Kategorie.
 
         :type category_id: int
         :type name: str
@@ -22,11 +22,11 @@ class Category:
 
     def __repr__(self):
         """
-        Return a string representation of the category.
+        Gibt eine String-Repräsentation der Kategorie zurück.
 
-        This representation is useful for debugging and logging.
+        Diese Darstellung ist hilfreich für Debugging und Logging.
 
-        :return: String representation of the category.
+        :return: String-Repräsentation der Kategorie.
         :rtype: str
         """
         return f"Category(id={
@@ -36,10 +36,10 @@ class Category:
 
     def __str__(self):
         """
-        Return a user-friendly string representation of the category.
+        Gibt eine benutzerfreundliche String-Repräsentation der Kategorie zurück.
 
-        This string is suitable for display in user interfaces or logs.
-        :return: User-friendly string representation of the category.
+        Diese Darstellung eignet sich für Benutzeroberflächen oder Logs.
+        :return: Benutzerfreundliche String-Repräsentation der Kategorie.
         :rtype: str
 
         """
@@ -50,11 +50,11 @@ class Category:
 
     def to_dict(self):
         """
-        Convert the category to a dictionary representation.
+        Wandelt die Kategorie in ein Dictionary um.
 
-        This method is useful for serialization or when passing data to APIs.
+        Diese Methode ist nützlich für die Serialisierung oder zur Übergabe an APIs.
 
-        :return: Dictionary representation of the category.
+        :return: Dictionary-Repräsentation der Kategorie.
         :rtype: dict
         """
         return {
@@ -66,13 +66,13 @@ class Category:
     @classmethod
     def from_dict(cls, data):
         """
-        Create a Category instance from a dictionary representation.
+        Erstellt eine ``Category``-Instanz aus einer Dictionary-Repräsentation.
 
-        This method is useful for deserializing data from APIs or databases.
+        Diese Methode ist hilfreich, um Daten aus APIs oder Datenbanken zu deserialisieren.
 
-        :param data: Dictionary containing category data.
+        :param data: Dictionary mit Kategoriedaten.
         :type data: dict
-        :return: Category instance created from the dictionary.
+        :return: Aus dem Dictionary erzeugte ``Category``-Instanz.
         :rtype: Category
 
         """

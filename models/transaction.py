@@ -3,28 +3,28 @@ from datetime import datetime
 
 class Transaction:
     """
-    Represents a financial transaction, which can be either an income or an expense.
+    Repräsentiert eine Finanztransaktion, die entweder eine Einnahme oder eine Ausgabe sein kann.
 
-    Attributes:
-        amount (float): The amount of the transaction.
-        date (datetime): The date of the transaction.
-        category (str): The category of the transaction.
-        description (str): A description of the transaction.
-        type (str): The type of the transaction, either "income" or "expense".
+    Attribute:
+        amount (float): Der Betrag der Transaktion.
+        date (datetime): Das Datum der Transaktion.
+        category (str): Die Kategorie der Transaktion.
+        description (str): Eine Beschreibung der Transaktion.
+        type (str): Der Typ der Transaktion, entweder ``"income"`` oder ``"expense"``.
     """
 
     def __init__(self, amount, date, category, description, t_type):
         """
-        Initialize a Transaction instance.
+        Initialisiert eine ``Transaction``-Instanz.
 
-        :param amount: The amount of the transaction.
-        :param date: The date of the transaction, can be a datetime object or a string in "YYYY-MM-DD" format.
-        :param category: The category of the transaction.
-        :param description: A description of the transaction.
-        :param t_type: The type of the transaction, either "income" or "expense".
+        :param amount: Der Betrag der Transaktion.
+        :param date: Das Datum der Transaktion, entweder als ``datetime``-Objekt oder als String im Format ``"YYYY-MM-DD"``.
+        :param category: Die Kategorie der Transaktion.
+        :param description: Eine Beschreibung der Transaktion.
+        :param t_type: Der Typ der Transaktion, entweder ``"income"`` oder ``"expense"``.
 
         :type amount: float
-        :type date: datetime or str
+        :type date: datetime | str
         :type category: str
         :type description: str
         :type t_type: str
@@ -39,10 +39,10 @@ class Transaction:
 
     def __str__(self):
         """
-        Return a user-friendly string representation of the transaction.
-        This string includes the date, type, amount, category, and description.
+        Gibt eine benutzerfreundliche String-Repräsentation der Transaktion zurück.
+        Dieser String enthält Datum, Typ, Betrag, Kategorie und Beschreibung.
 
-        :return: A formatted string representing the transaction.
+        :return: Formatierter String, der die Transaktion repräsentiert.
         :rtype: str
 
         """
@@ -56,26 +56,26 @@ class Transaction:
 
 class Income(Transaction):
     """
-    Represents an income transaction, inheriting from Transaction.
+    Repräsentiert eine Einnahmetransaktion und erbt von ``Transaction``.
     """
     def __init__(self, amount, date, category, description, source, tax_info):
         """
-        Initialize an Income instance.
-        This constructor sets the amount, date, category, description, source of income, and tax information.
+        Initialisiert eine ``Income``-Instanz.
+        Dieser Konstruktor setzt Betrag, Datum, Kategorie, Beschreibung, Herkunft der Einnahme sowie Steuerinformationen.
 
-        :param amount: The amount of the income transaction.
-        :param date: The date of the income transaction, can be a datetime object or a string in "YYYY-MM-DD" format.
-        :param category: The category of the income transaction.
-        :param description: A description of the income transaction.
-        :param source: The source of the income (e.g., salary, freelance work).
-        :param tax_info: Tax information related to the income (e.g., tax rate, deductions).
+        :param amount: Der Betrag der Einnahme.
+        :param date: Das Datum der Einnahme, entweder als ``datetime``-Objekt oder als String im Format ``"YYYY-MM-DD"``.
+        :param category: Die Kategorie der Einnahme.
+        :param description: Eine Beschreibung der Einnahme.
+        :param source: Die Quelle der Einnahme (z. B. Gehalt, freiberufliche Arbeit).
+        :param tax_info: Steuerinformationen zu dieser Einnahme (z. B. Steuersatz, Abzüge).
 
         :type amount: float
-        :type date: datetime or str
+        :type date: datetime | str
         :type category: str
         :type description: str
         :type source: str
-        :type tax_info: dict or str
+        :type tax_info: dict | str
 
         """
         super().__init__(amount, date, category, description, "income")
@@ -85,24 +85,24 @@ class Income(Transaction):
 
 class Expense(Transaction):
     """
-    Represents an expense transaction, inheriting from Transaction.
+    Repräsentiert eine Ausgabetransaktion und erbt von ``Transaction``.
     """
 
     def __init__(self, amount, date, category,
                  description, payment_method, is_recurring):
         """
-        Initialize an Expense instance.
-        This constructor sets the amount, date, category, description, payment method, and whether the expense is recurring.
+        Initialisiert eine ``Expense``-Instanz.
+        Dieser Konstruktor setzt Betrag, Datum, Kategorie, Beschreibung, Zahlungsmethode sowie die Information, ob es sich um eine wiederkehrende Ausgabe handelt.
 
-        :param amount: The amount of the expense transaction.
-        :param date: The date of the expense transaction, can be a datetime object or a string in "YYYY-MM-DD" format.
-        :param category: The category of the expense transaction.
-        :param description: A description of the expense transaction.
-        :param payment_method: The method of payment (e.g., cash, credit card).
-        :param is_recurring: A boolean indicating if the expense is recurring (True) or one-time (False).
+        :param amount: Der Betrag der Ausgabe.
+        :param date: Das Datum der Ausgabe, entweder als ``datetime``-Objekt oder als String im Format ``"YYYY-MM-DD"``.
+        :param category: Die Kategorie der Ausgabe.
+        :param description: Eine Beschreibung der Ausgabe.
+        :param payment_method: Die Zahlungsmethode (z. B. Bargeld, Kreditkarte).
+        :param is_recurring: ``True`` bei wiederkehrender Ausgabe, sonst ``False``.
 
         :type amount: float
-        :type date: datetime or str
+        :type date: datetime | str
         :type category: str
         :type description: str
         :type payment_method: str
